@@ -53,11 +53,20 @@ namespace StreamTracker.Controllers
     [HttpPost]
     public async Task<ActionResult<Video>> CreateVideo(Video video)
     {
-        Console.WriteLine($"Incoming UserId: {video.UserId}"); // <== Add this for debug
+        Console.WriteLine($"[DEBUG] Incoming Video Payload: Title={video.Title}, UserId={video.UserId}");
+
+        // Validate the UserId exists in DB
+        var userExists = await _context.Users.AnyAsync(u => u.Id == video.UserId);
+        if (!userExists)
+        {
+            Console.WriteLine($"[ERROR] UserId {video.UserId} does not exist.");
+            return BadRequest($"Invalid UserId: {video.UserId}");
+        }
 
         _context.Videos.Add(video);
         await _context.SaveChangesAsync();
 
+        Console.WriteLine($"[SUCCESS] Video saved with Id={video.Id}, UserId={video.UserId}");
         return CreatedAtAction(nameof(GetVideoById), new { id = video.Id }, video);
     }
 

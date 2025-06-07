@@ -12,5 +12,6 @@ namespace StreamTracker.Models
     public int Rating { get; set; }
     public float? TmdbRating { get; set; }
     public List<VideoUrl>? VideoUrls { get; set; }  // A User can have multiple Conversations
+    
     }
 }
