@@ -17,13 +17,24 @@ namespace StreamTracker.Controllers
 
         // GET: api/users/uid/{userUid}
         [HttpGet("uid/{userUid}")]
-        public async Task<ActionResult<User>> GetUserByUid(string userUid)
+        public async Task<ActionResult<User>> GetOrCreateUserByUid(string userUid)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserUid == userUid);
+
             if (user == null)
             {
-                return NotFound();
+                // Create new user if not found
+                user = new User
+                {
+                    UserUid = userUid,
+                    Username = "New User",
+                    Email = "unknown@example.com"
+                };
+
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
             }
+
             return Ok(user);
         }
 
