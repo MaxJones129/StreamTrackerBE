@@ -16,13 +16,13 @@ public class Program
 
         builder.Services.AddCors(options =>
         {
-            options.AddPolicy("AllowAnyOrigin",
-                policy =>
-                {
-                    policy.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-                });
+            options.AddPolicy("AllowAll", policy =>
+            {
+                policy
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
         });
 
         // Add controllers and configure JSON options to handle circular references
@@ -39,7 +39,8 @@ public class Program
         var app = builder.Build();
 
         // Apply the CORS policy to the pipeline
-        app.UseCors("AllowAnyOrigin");
+        app.UseCors("AllowAll");
+
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
