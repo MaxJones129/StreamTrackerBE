@@ -45,7 +45,7 @@ namespace StreamTracker.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetUserByUid), new { userUid = user.UserUid }, user);
+            return CreatedAtAction(nameof(GetOrCreateUserByUid), new { userUid = user.UserUid }, user);
         }
 
         // PUT: api/users/{id}
