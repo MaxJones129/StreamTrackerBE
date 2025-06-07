@@ -12,7 +12,28 @@ public class Program
 
         // Add services to the container.
         builder.Services.AddDbContext<StreamTrackerDbContext>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))); // Use Npgsql for PostgreSQL
+        {
+            // Try to get DATABASE_URL from environment variables (for Heroku)
+            var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+            string connectionString;
+
+            if (!string.IsNullOrEmpty(databaseUrl))
+            {
+                // Convert Heroku DATABASE_URL (postgres://username:password@host:port/dbname)
+                var uri = new Uri(databaseUrl);
+                var userInfo = uri.UserInfo.Split(':');
+
+                connectionString = $"Host={uri.Host};Port={uri.Port};Username={userInfo[0]};Password={userInfo[1]};Database={uri.AbsolutePath.TrimStart('/')};SSL Mode=Require;Trust Server Certificate=true;";
+            }
+            else
+            {
+                // Fallback to appsettings.json or development connection string
+                connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            }
+
+            options.UseNpgsql(connectionString);
+        });
 
         builder.Services.AddCors(options =>
         {
