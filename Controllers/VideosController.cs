@@ -53,10 +53,12 @@ namespace StreamTracker.Controllers
     [HttpPost]
     public async Task<ActionResult<Video>> CreateVideo(Video video)
     {
-      _context.Videos.Add(video);
-      await _context.SaveChangesAsync();
+        Console.WriteLine($"Incoming UserId: {video.UserId}"); // <== Add this for debug
 
-      return CreatedAtAction(nameof(GetVideoById), new { id = video.Id }, video);
+        _context.Videos.Add(video);
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetVideoById), new { id = video.Id }, video);
     }
 
     [HttpPut("{id}")]
